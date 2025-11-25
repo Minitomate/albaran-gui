@@ -6,7 +6,7 @@ import {
     Calendar,
     ArrowUpRight,
     Package
-} from 'lucide-reac';
+} from 'lucide-react';
 import {
     XAxis,
     YAxis,
