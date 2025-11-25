@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Eye, Edit, Trash2, Plus } from 'lucide-react';
+import { Search, Eye, Edit, Trash2, Plus, Download } from 'lucide-react';
 import type { Albaran } from '../types';
 
 interface AlbaranListProps {
@@ -17,6 +17,33 @@ const AlbaranList: React.FC<AlbaranListProps> = ({ albaranes, onDelete }) => {
         albaran.proveedor_nombre.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const exportToCSV = () => {
+        const headers = ['Número', 'Fecha', 'Cliente', 'CIF Cliente', 'Proveedor', 'CIF Proveedor', 'Importe Total', 'Observaciones'];
+        const csvContent = [
+            headers.join(','),
+            ...filteredAlbaranes.map(a => [
+                a.numero_albaran,
+                a.fecha_emision,
+                `"${a.cliente_nombre}"`,
+                a.cliente_cif_nif,
+                `"${a.proveedor_nombre}"`,
+                a.proveedor_cif_nif,
+                a.importe_total,
+                `"${a.observaciones.replace(/"/g, '""')}"`
+            ].join(','))
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `albaranes_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -24,13 +51,22 @@ const AlbaranList: React.FC<AlbaranListProps> = ({ albaranes, onDelete }) => {
                     <h1 className="text-2xl font-bold text-gray-900">Albaranes</h1>
                     <p className="text-sm text-gray-500 mt-1">Gestiona tus notas de entrega</p>
                 </div>
-                <Link
-                    to="/albaranes/new"
-                    className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
-                >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Nuevo Albarán
-                </Link>
+                <div className="flex gap-3">
+                    <button
+                        onClick={exportToCSV}
+                        className="inline-flex items-center justify-center px-4 py-2 bg-white text-gray-700 border border-gray-300 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+                    >
+                        <Download className="w-4 h-4 mr-2" />
+                        Descargar CSV
+                    </button>
+                    <Link
+                        to="/albaranes/new"
+                        className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                    >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Nuevo Albarán
+                    </Link>
+                </div>
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">

@@ -67,27 +67,87 @@ const Dashboard: React.FC<DashboardProps> = ({ albaranes }) => {
         ];
     }, [albaranes]);
 
-    // Prepare chart data (Revenue by Month)
-    const chartData = useMemo(() => {
-        const data: Record<string, number> = {};
-        albaranes.forEach(a => {
-            const date = new Date(a.fecha_emision);
-            const month = date.toLocaleString('default', { month: 'short' });
-            data[month] = (data[month] || 0) + a.importe_total;
-        });
+    const [period, setPeriod] = React.useState('all');
 
-        // Fill with some dummy data for better visualization if empty
-        if (Object.keys(data).length < 3) {
-            return [
-                { name: 'Sep', amount: 1200 },
-                { name: 'Oct', amount: 2100 },
-                { name: 'Nov', amount: Object.values(data).reduce((a, b) => a + b, 0) || 1500 },
-                { name: 'Dic', amount: 3200 },
-            ];
+    // Prepare chart data (Revenue by Month/Day/Albaran)
+    const chartData = useMemo(() => {
+        const now = new Date();
+        const data: Record<string, number> = {};
+        let filteredAlbaranes = albaranes;
+
+        // Filter based on period
+        if (period !== 'all') {
+            const cutoffDate = new Date();
+            switch (period) {
+                case '1d':
+                    cutoffDate.setHours(0, 0, 0, 0); // Start of today
+                    break;
+                case '1w':
+                    cutoffDate.setDate(now.getDate() - 7);
+                    break;
+                case '1m':
+                    cutoffDate.setMonth(now.getMonth() - 1);
+                    break;
+                case '3m':
+                    cutoffDate.setMonth(now.getMonth() - 3);
+                    break;
+                case '6m':
+                    cutoffDate.setMonth(now.getMonth() - 6);
+                    break;
+                case 'year':
+                    cutoffDate.setMonth(0, 1); // Start of current year
+                    cutoffDate.setHours(0, 0, 0, 0);
+                    break;
+            }
+
+            filteredAlbaranes = albaranes.filter(a => new Date(a.fecha_emision) >= cutoffDate);
         }
 
-        return Object.entries(data).map(([name, amount]) => ({ name, amount }));
-    }, [albaranes]);
+        // Grouping logic
+        if (period === '1d') {
+            // For 1 day, since we don't have time, we map individual albaranes
+            // This shows the sequence of albaranes for the day
+            return filteredAlbaranes.map(a => ({
+                name: a.numero_albaran,
+                amount: a.importe_total
+            })).reverse(); // Show in chronological order if list is desc
+        } else if (['1w', '1m'].includes(period)) {
+            // Group by Day
+            filteredAlbaranes.forEach(a => {
+                const date = new Date(a.fecha_emision);
+                const day = date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' });
+                data[day] = (data[day] || 0) + a.importe_total;
+            });
+            // Sort by date
+            return Object.entries(data)
+                .sort((a, b) => {
+                    const [d1, m1] = a[0].split('/');
+                    const [d2, m2] = b[0].split('/');
+                    // Simple sort assuming same year for 1m/1w roughly
+                    return new Date(now.getFullYear(), parseInt(m1) - 1, parseInt(d1)).getTime() -
+                        new Date(now.getFullYear(), parseInt(m2) - 1, parseInt(d2)).getTime();
+                })
+                .map(([name, amount]) => ({ name, amount }));
+        } else {
+            // Group by Month (default for longer periods and 'all')
+            filteredAlbaranes.forEach(a => {
+                const date = new Date(a.fecha_emision);
+                const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                data[key] = (data[key] || 0) + a.importe_total;
+            });
+
+            return Object.entries(data)
+                .sort((a, b) => a[0].localeCompare(b[0]))
+                .map(([key, amount]) => {
+                    const [year, month] = key.split('-');
+                    const date = new Date(parseInt(year), parseInt(month) - 1);
+                    return {
+                        name: date.toLocaleString('es-ES', { month: 'short', year: '2-digit' }),
+                        amount
+                    };
+                });
+        }
+    }, [albaranes, period]);
 
     return (
         <div className="space-y-8">
@@ -149,48 +209,64 @@ const Dashboard: React.FC<DashboardProps> = ({ albaranes }) => {
                 <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-lg font-bold text-gray-900">Evolución de Facturación</h2>
-                        <select className="text-sm border-gray-200 rounded-lg text-gray-500 focus:ring-blue-500 focus:border-blue-500">
-                            <option>Últimos 6 meses</option>
-                            <option>Este año</option>
+                        <select
+                            value={period}
+                            onChange={(e) => setPeriod(e.target.value)}
+                            className="text-sm border-gray-200 rounded-lg text-gray-500 focus:ring-blue-500 focus:border-blue-500"
+                        >
+                            <option value="all">Todo</option>
+                            <option value="1d">Último día</option>
+                            <option value="1w">Última semana</option>
+                            <option value="1m">Último mes</option>
+                            <option value="3m">Últimos 3 meses</option>
+                            <option value="6m">Últimos 6 meses</option>
+                            <option value="year">Este año</option>
                         </select>
                     </div>
-                    <div className="h-80 w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={chartData}>
-                                <defs>
-                                    <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1} />
-                                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
-                                <XAxis
-                                    dataKey="name"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: '#9ca3af', fontSize: 12 }}
-                                    dy={10}
-                                />
-                                <YAxis
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: '#9ca3af', fontSize: 12 }}
-                                    tickFormatter={(value) => `${value}€`}
-                                />
-                                <Tooltip
-                                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                    cursor={{ stroke: '#3b82f6', strokeWidth: 1, strokeDasharray: '4 4' }}
-                                />
-                                <Area
-                                    type="monotone"
-                                    dataKey="amount"
-                                    stroke="#3b82f6"
-                                    strokeWidth={3}
-                                    fillOpacity={1}
-                                    fill="url(#colorAmount)"
-                                />
-                            </AreaChart>
-                        </ResponsiveContainer>
+                    <div className="h-80 w-full" style={{ minHeight: '320px' }}>
+                        {chartData.length > 0 ? (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={chartData}>
+                                    <defs>
+                                        <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1} />
+                                            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
+                                    <XAxis
+                                        dataKey="name"
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fill: '#9ca3af', fontSize: 12 }}
+                                        dy={10}
+                                    />
+                                    <YAxis
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fill: '#9ca3af', fontSize: 12 }}
+                                        tickFormatter={(value) => `${value}€`}
+                                    />
+                                    <Tooltip
+                                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                        cursor={{ stroke: '#3b82f6', strokeWidth: 1, strokeDasharray: '4 4' }}
+                                    />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="amount"
+                                        stroke="#3b82f6"
+                                        strokeWidth={3}
+                                        fillOpacity={1}
+                                        fill="url(#colorAmount)"
+                                    />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        ) : (
+                            <div className="h-full flex flex-col items-center justify-center text-gray-400">
+                                <FileText className="w-12 h-12 mb-2 opacity-20" />
+                                <p>No hay datos para el periodo seleccionado</p>
+                            </div>
+                        )}
                     </div>
                 </div>
 

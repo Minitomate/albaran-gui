@@ -1,10 +1,18 @@
 import type { Albaran } from '../types';
 
+const today = new Date();
+const yesterday = new Date(today); yesterday.setDate(today.getDate() - 1);
+const twoDaysAgo = new Date(today); twoDaysAgo.setDate(today.getDate() - 2);
+const threeDaysAgo = new Date(today); threeDaysAgo.setDate(today.getDate() - 3);
+const lastWeek = new Date(today); lastWeek.setDate(today.getDate() - 7);
+
+const formatDate = (date: Date) => date.toISOString().split('T')[0];
+
 export const mockAlbaranes: Albaran[] = [
     {
         id: "unique_id_1",
-        numero_albaran: "ALB-2024-001",
-        fecha_emision: "2024-11-25",
+        numero_albaran: `ALB-${today.getFullYear()}-001`,
+        fecha_emision: formatDate(today),
         proveedor_nombre: "Mi Empresa S.L.",
         proveedor_cif_nif: "B12345678",
         proveedor_direccion: "Calle Industria 1, Madrid",
@@ -27,8 +35,8 @@ export const mockAlbaranes: Albaran[] = [
     },
     {
         id: "unique_id_2",
-        numero_albaran: "ALB-2024-002",
-        fecha_emision: "2024-11-26",
+        numero_albaran: `ALB-${today.getFullYear()}-002`,
+        fecha_emision: formatDate(yesterday),
         proveedor_nombre: "Mi Empresa S.L.",
         proveedor_cif_nif: "B12345678",
         proveedor_direccion: "Calle Industria 1, Madrid",
@@ -59,8 +67,8 @@ export const mockAlbaranes: Albaran[] = [
     },
     {
         id: "unique_id_3",
-        numero_albaran: "ALB-2024-003",
-        fecha_emision: "2024-11-27",
+        numero_albaran: `ALB-${today.getFullYear()}-003`,
+        fecha_emision: formatDate(twoDaysAgo),
         proveedor_nombre: "Mi Empresa S.L.",
         proveedor_cif_nif: "B12345678",
         proveedor_direccion: "Calle Industria 1, Madrid",
@@ -83,8 +91,8 @@ export const mockAlbaranes: Albaran[] = [
     },
     {
         id: "unique_id_4",
-        numero_albaran: "ALB-2024-004",
-        fecha_emision: "2024-11-28",
+        numero_albaran: `ALB-${today.getFullYear()}-004`,
+        fecha_emision: formatDate(threeDaysAgo),
         proveedor_nombre: "Mi Empresa S.L.",
         proveedor_cif_nif: "B12345678",
         proveedor_direccion: "Calle Industria 1, Madrid",
@@ -107,8 +115,8 @@ export const mockAlbaranes: Albaran[] = [
     },
     {
         id: "unique_id_5",
-        numero_albaran: "ALB-2024-005",
-        fecha_emision: "2024-11-29",
+        numero_albaran: `ALB-${today.getFullYear()}-005`,
+        fecha_emision: formatDate(lastWeek),
         proveedor_nombre: "Mi Empresa S.L.",
         proveedor_cif_nif: "B12345678",
         proveedor_direccion: "Calle Industria 1, Madrid",
