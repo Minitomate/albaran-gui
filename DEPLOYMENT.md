@@ -2,7 +2,7 @@
 
 ## GitHub Pages Deployment
 
-This project is configured to automatically deploy to GitHub Pages with the custom domain `https://appbaran.minitomate.com`.
+This project is configured to automatically deploy to GitHub Pages with the custom domain `https://appbaran.minitomate.eu.org`.
 
 ### Initial Setup Steps
 
@@ -30,7 +30,7 @@ This project is configured to automatically deploy to GitHub Pages with the cust
    - Source: Select "GitHub Actions"
 
 4. **Configure Custom Domain** (DNS Setup):
-   In your DNS provider (where `minitomate.com` is registered), add these records:
+   In your DNS provider (where `minitomate.eu.org` is registered), add these records:
    
    ```
    Type: CNAME
@@ -41,7 +41,7 @@ This project is configured to automatically deploy to GitHub Pages with the cust
 
 5. **Set Custom Domain in GitHub**:
    - Go to Settings → Pages
-   - Under "Custom domain", enter: `appbaran.minitomate.com`
+   - Under "Custom domain", enter: `appbaran.minitomate.eu.org`
    - Click Save
    - Wait for DNS check to complete (may take a few minutes)
    - Enable "Enforce HTTPS" once DNS is verified
@@ -51,7 +51,7 @@ This project is configured to automatically deploy to GitHub Pages with the cust
 Every time you push to the `main` branch, GitHub Actions will:
 1. Build the application
 2. Deploy it to GitHub Pages
-3. Make it available at `https://appbaran.minitomate.com`
+3. Make it available at `https://appbaran.minitomate.eu.org`
 
 ### Manual Deployment (Alternative)
 
