@@ -67,7 +67,7 @@ If you prefer manual deployment:
    npm run deploy
    ```
 
-### Important Notes
+### Important Notes for public
 
 - The CNAME file in the `public/` folder ensures your custom domain persists after each deployment
 - Environment variables are securely injected during the GitHub Actions build process
