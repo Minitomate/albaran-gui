@@ -20,6 +20,7 @@
     "vite": "^7.2.4"
   },
   "dependencies": {
+    "airtable": "^0.12.2",
     "clsx": "^2.1.1",
     "lucide-react": "^0.554.0",
     "react": "^19.2.0",

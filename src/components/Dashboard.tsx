@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import {
     Users,
     FileText,
@@ -89,7 +90,7 @@ const Dashboard: React.FC<DashboardProps> = ({ albaranes }) => {
     }, [albaranes]);
 
     return (
-        <div className="space-y-8 animate-fade-in">
+        <div className="space-y-8">
             {/* Welcome Section */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
@@ -100,12 +101,19 @@ const Dashboard: React.FC<DashboardProps> = ({ albaranes }) => {
                     </p>
                 </div>
                 <div className="flex gap-3">
-                    <button className="px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors shadow-sm">
+                    <button
+                        type="button"
+                        onClick={() => window.print()}
+                        className="px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors shadow-sm cursor-pointer"
+                    >
                         Descargar Reporte
                     </button>
-                    <button className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm shadow-blue-200">
+                    <Link
+                        to="/albaranes/new"
+                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm shadow-blue-200 cursor-pointer"
+                    >
                         Nuevo Albarán
-                    </button>
+                    </Link>
                 </div>
             </div>
 
@@ -190,11 +198,11 @@ const Dashboard: React.FC<DashboardProps> = ({ albaranes }) => {
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-lg font-bold text-gray-900">Actividad Reciente</h2>
-                        <button className="text-sm text-blue-600 font-medium hover:text-blue-700">Ver todo</button>
+                        <Link to="/albaranes" className="text-sm text-blue-600 font-medium hover:text-blue-700">Ver todo</Link>
                     </div>
                     <div className="space-y-6">
                         {albaranes.slice(0, 5).map((albaran, i) => (
-                            <div key={albaran.id} className="flex items-center gap-4 group cursor-pointer hover:bg-gray-50 p-2 -mx-2 rounded-lg transition-colors">
+                            <Link key={albaran.id} to={`/albaranes/${albaran.id}`} className="flex items-center gap-4 group cursor-pointer hover:bg-gray-50 p-2 -mx-2 rounded-lg transition-colors">
                                 <div className="relative">
                                     <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 font-bold text-xs border border-blue-100">
                                         {albaran.numero_albaran.split('-')[1] || 'ALB'}
@@ -215,7 +223,7 @@ const Dashboard: React.FC<DashboardProps> = ({ albaranes }) => {
                                         Completado
                                     </span>
                                 </div>
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 </div>
