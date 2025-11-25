@@ -33,7 +33,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 isSidebarOpen ? "translate-x-0" : "-translate-x-full"
             )}>
                 <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
-                    <span className="text-xl font-bold text-blue-600">AlbaranApp</span>
+                    <span className="text-xl font-bold text-blue-600">AppBaran</span>
                     <button
                         onClick={() => setIsSidebarOpen(false)}
                         className="lg:hidden text-gray-500 hover:text-gray-700"
@@ -84,7 +84,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     >
                         <Menu size={24} />
                     </button>
-                    <span className="text-lg font-semibold text-gray-900">AlbaranApp</span>
+                    <span className="text-lg font-semibold text-gray-900">AppBaran</span>
                     <div className="w-6" /> {/* Spacer for centering if needed */}
                 </header>
 
