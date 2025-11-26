@@ -40,8 +40,10 @@ jobs:
           VITE_AIRTABLE_BASE_ID: ${{ secrets.VITE_AIRTABLE_BASE_ID }}
           VITE_AIRTABLE_TABLE_NAME: ${{ secrets.VITE_AIRTABLE_TABLE_NAME }}
       
-      - name: Add .nojekyll file
-        run: touch dist/.nojekyll
+      - name: Add .nojekyll and 404.html
+        run: |
+          touch dist/.nojekyll
+          cp dist/index.html dist/404.html
       
       - name: Setup Pages
         uses: actions/configure-pages@v4
