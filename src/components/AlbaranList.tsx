@@ -12,9 +12,9 @@ const AlbaranList: React.FC<AlbaranListProps> = ({ albaranes, onDelete }) => {
     const [searchTerm, setSearchTerm] = useState('');
 
     const filteredAlbaranes = albaranes.filter(albaran =>
-        albaran.numero_albaran.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        albaran.cliente_nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        albaran.proveedor_nombre.toLowerCase().includes(searchTerm.toLowerCase())
+        (albaran.numero_albaran || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (albaran.cliente_nombre || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (albaran.proveedor_nombre || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const exportToCSV = () => {
