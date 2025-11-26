@@ -18,24 +18,6 @@ This project is configured to automatically deploy to GitHub Pages with the cust
 
 2. **Configure GitHub Secrets**:
    Go to your repository on GitHub → Settings → Secrets and variables → Actions → New repository secret
-   
-   Add these three secrets:
-   - `VITE_AIRTABLE_TOKEN`: Your Airtable API token
-   - `VITE_AIRTABLE_BASE_ID`: Your Airtable base ID
-   - `VITE_AIRTABLE_TABLE_NAME`: Your Airtable table name
-
-3. **Enable GitHub Pages**:
-   - Go to Settings → Pages
-   - Under "Build and deployment"
-   - Source: Select "GitHub Actions"
-
-4. **Configure Custom Domain** (DNS Setup):
-   In your DNS provider (where `minitomate.eu.org` is registered), add these records:
-   
-   ```
-   Type: CNAME
-   Name: appbaran
-   Value: YOUR_USERNAME.github.io
    TTL: 3600 (or Auto)
    ```
 
